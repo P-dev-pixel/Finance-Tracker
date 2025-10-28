@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expense Tracker</title>
+    <style>
+      body {
+        color: black;
+      }
+      #container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        gap: 20px;
+      }
+      input {
+        border: 0px;
+        outline: 0px;
+        border-radius: 10px;
+        height: 35px;
+        width: 200px;
+        padding-left: 15px;
+      }
+      #listCon {
+        height: 100vh;
+        margin-top: 30px;
+      }
+      #table {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+        width: 100vh;
+      }
+      a {
+        color: black;
+        text-decoration: none;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid white;
+        border-collapse: collapse;
+        padding: 10px;
+        text-align: center;
+      }
+      th {
+        background-color: gray;
+        height: 30px;
+        width: 150px;
+      }
+      td {
+        background-color: darkgray;
+        width: 150px;
+      }
+      span {
+        color: green;
+      }
+      #total,
+      #result,
+      #sAmt {
+        margin: 55px;
+        margin-left: 90px;
+      }
+      #total {
+        height: 40px;
+        width: 100px;
+        border-radius: 10px;
+        border: none;
+        color: white;
+        background-color: rgb(21, 222, 225);
+        font-weight: bold;
+        cursor: pointer;
+      }
+      #controls {
+        display: flex;
+        gap: 10px;
+        margin-left: 120px;
+        margin-top: 20px;
+      }
+      #split,
+      #clear,
+      #delete,
+      #download {
+        margin-top: 55px;
+        height: 40px;
+        width: 100px;
+        border-radius: 10px;
+        border: none;
+        color: white;
+        background-color: white;
+        cursor: pointer;
+      }
+      #delete {
+        background-color: red;
+      }
+      #clear {
+        background-color: orange;
+      }
+      #download {
+        background-color: rgb(41, 174, 41);
+      }
+      #split::placeholder {
+        /* padding-left: 10px; */
+        color: rgb(8, 54, 180);
+        text-decoration: none;
+        box-decoration-break: normal;
+      }
+      #split {
+        color: black;
+        padding-left: 10px;
+        cursor: text;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <input type="text" placeholder="Enter the Product Name" />
+      <input type="number" min="1" placeholder="Enter the Price" />
+
+      <button>Add</button>
+
+      <a href="#table">Show the History</a>
+    </div>
+
+    <div id="listCon">
+      <div id="table">
+        <table>
+          <tr>
+            <th>S.No</th>
+            <th>Date(DD/MM/hrs)</th>
+            <th>Product Name</th>
+            <th>Price</th>
+          </tr>
+        </table>
+      </div>
+
+      <div id="controls">
+        <button id="total">Total</button>
+        <button id="delete">Delete</button>
+        <button id="clear">Clear All</button>
+        <button id="download">Download PDF</button>
+        <input type="number" id="split" placeholder="enther the count" />
+      </div>
+
+      <h1 id="result"></h1>
+      <h1 id="sAmt"></h1>
+    </div>
+
+    <!-- jsPDF + html2canvas libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script>
+      const addList = document.querySelectorAll("button")[0];
+      const total = document.querySelector("#total");
+      const table = document.querySelector("table");
+      const delet = document.getElementById("delete");
+      const clear = document.getElementById("clear");
+      const download = document.getElementById("download");
+      const ce = document.createElement("h1");
+      const tr = document.getElementsByTagName("tr");
+
+      let count = 1;
+
+      //  Add the row  functionality
+      addList.addEventListener("click", () => {
+        const Product = document.querySelectorAll("input")[0].value;
+        const price = document.querySelectorAll("input")[1].value;
+
+        if (Product.trim() === "" || price <= 0) {
+          document.querySelectorAll("input")[0].style.border = "2px solid red";
+          document.querySelectorAll("input")[1].style.border = "2px solid red";
+          document.querySelectorAll("input")[1].style.boxDecorationBreak =
+            AnimationEvent;
+          return;
+        }
+
+        document.querySelectorAll("input")[0].style.border = "none";
+        document.querySelectorAll("input")[1].style.border = "none";
+
+        const date = new Date();
+        const newRow = document.createElement("tr");
+        newRow.innerHTML = `<td>${count++}</td>
+                            <td>${date.getDate()}/${
+          date.getMonth() + 1
+        } (Hrs: ${date.getHours()})</td>
+                            <td>${Product}</td>
+                            <td>${price}</td>`;
+        table.appendChild(newRow);
+
+        document.querySelectorAll("input")[0].value = "";
+        document.querySelectorAll("input")[1].value = "";
+
+        saveData();
+      });
+
+      //  total calculation functionality
+      total.addEventListener("click", () => {
+        let sum = 0;
+        let splitCount = 1;
+
+        for (let i = 0; i < tr.length; i++) {
+          const tds = tr[i].querySelectorAll("td");
+          if (tds.length >= 4) {
+            sum += parseFloat(tds[3].textContent);
+          }
+        }
+        if (document.getElementById("split").value) {
+          splitCount = parseInt(document.getElementById("split").value);
+
+          ce.innerHTML = ` Split Amount for ${splitCount} person  is: ${
+           ( sum / splitCount).toFixed(2)
+          }`;
+          ce.style.marginLeft = "87px";
+          listCon.appendChild(ce);
+        }
+        document.getElementById(
+          "result"
+        ).innerHTML = `Total: <span>${sum}</span>`;
+      });
+
+      // Delete the last row
+      delet.addEventListener("click", () => {
+        if (tr.length > 1) {
+          tr[tr.length - 1].remove();
+          count--;
+          // saveData();
+        }
+      });
+
+      // clear all functionality
+      clear.addEventListener("click", () => {
+        let rows = table.querySelectorAll("tr:not(:first-child)");
+        while (rows.length > 0) {
+          rows[rows.length - 1].remove();
+          rows = table.querySelectorAll("tr:not(:first-child)");
+        }
+        count = 1;
+        // localStorage.removeItem("List");
+        document.getElementById("result").innerHTML = "";
+      });
+
+      function saveData() {
+        const rows = table.querySelectorAll("tr:not(:first-child)");
+        const rowsHTML = Array.from(rows)
+          .map((row) => row.outerHTML)
+          .join("");
+        localStorage.setItem("List", rowsHTML);
+      }
+
+      function showTask() {
+        const savedData = localStorage.getItem("List");
+        if (savedData) {
+          table.innerHTML =
+            `<tr>
+              <th>S.No</th>
+              <th>Date(DD/MM/hrs)</th>
+              <th>Product Name</th>
+              <th>Price</th>
+            </tr>` + savedData;
+          count = table.rows.length;
+        }
+      }
+
+      showTask();
+    </script>
+  </body>
+</html>
