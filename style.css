@@ -1,0 +1,183 @@
+body{
+  font-family: Arial, sans-serif;
+  margin: 0px;
+  padding: 0px;
+  background-color: #f9f9f9;
+  color: #222;
+}
+#container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  /* padding: 20px; */
+  flex-direction: column;
+ background-color: #FFF9E3;
+  height: 92vh;
+  width: 100%;
+}
+input{
+  border:  2px solid #ddd;
+  outline: none;
+  border-radius: 8px;
+  height: 35px;
+  width: 200px;
+  padding-left: 12px;
+  font-size: 14px;
+  transition: 0.5s;
+  background: #FFF;
+   box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+}
+input:focus{
+  border-color: #2aa9ff;
+}
+select{
+  border-radius: 8px;
+  border: 2px solid #ddd;
+  font-size: 14px;
+  padding: 8px;
+}
+button{
+  border: none;
+  border-radius: 8px;
+  height: 40px;
+  width: 100px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.5s;
+  background: #FF7B54; 
+  color: white;
+}
+a{
+  text-decoration: none;
+  color: #FF4500; text-decoration: none;
+}
+/* ========================= Table Selection ======================= */
+#listCon{
+  display: flex;
+flex-direction: column;
+align-items: center;
+margin-top: 20px;
+height: 100vh;
+padding-bottom: 120px;
+}
+table {
+  border-collapse: collapse;
+  margin-bottom: 30px;
+  text-align: center;
+  border-color: white;
+  width: 80%;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+th{
+  background-color: #0077ff;
+  color:white;
+}
+td{
+  background-color: #f0f0f0;
+}
+/* ========== Control Buttons Section ========== */
+#groceryControls,#roomControls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  margin-top: 40px;
+  position: relative; /* stays below table naturally */
+  margin-bottom: 50px;
+}
+
+#totalRoom , #totalGrocery{
+  background-color: #15dee1;
+  color: white;
+}
+
+#deleteRoom, #deleteGrocery {
+  background-color: #e03b3b;
+  color: white;
+}
+
+#clearRoom, #clearGrocery {
+  background-color: #f69a1b;
+  color: white;
+}
+
+#downloadRoom ,#downloadGrocery{
+  background-color: #2ebf4f;
+  color: white;
+}
+
+#splitRoom,#splitGrocery {
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  height: 38px;
+  width: 120px;
+  text-align: center;
+}
+option{
+  border-radius: 10px;
+  border: 0px;
+  outline: 0px;
+}
+/* ========== Result Section ========== */
+#result,
+#sAmt {
+  text-align: center;
+  margin-top: 10px;
+  color: #333;
+}
+
+span {
+  color: green;
+  font-weight: bold;
+}
+@media (max-width: 768px) {
+  #container{
+    flex-direction: column;
+    width: 95vh;
+  }
+  table{
+    width: 95%;
+  }
+  #roomControls, #groceryControls{
+    flex-wrap: wrap;
+    gap: 10px;
+
+  }
+  
+  input,
+  select,
+  #splitRoom,#splitGrocery {
+    width: 180px;
+  }
+}
+#name{
+  display: none;
+}
+hr{
+  /* margin-top: 10px; */
+  border: 10px solid black;
+  width: 100vh;
+}
+#nav{
+  width: 100%;
+  height: 65px;
+  background-color: gray;
+  display: flex;
+  justify-content:end;
+  align-items: center;
+  /* color: #ddd; */
+  /* margin: 0px; */
+  gap: 10px;
+  margin-top: 0px;
+}
+#nav a{
+  text-decoration: none;
+  color: white;
+  margin-right: 10px;
+}

@@ -1,0 +1,246 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            background-color: black;
+            margin: 0px;
+            padding: 0px;
+          
+        }
+        #container{
+            background-color: #ddd;
+            height: 600px;
+            width: 100%;
+            display: flex;
+            border-radius: 10px;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+
+        }
+        #addBox{
+         margin-bottom: 50px;
+        }
+        #room{
+   border-collapse: collapse;
+ text-align: center;
+ box-shadow: 0 2px 5px rgba(0,0,0, 0.3);
+ outline: none;
+ border-color: white;
+   width: 80%;
+        }
+       table {
+  border-collapse: collapse;
+  margin-bottom: 30px;
+  text-align: center;
+  border-color: white;
+  width: 80%;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+th{
+  background-color: #0077ff;
+  color:white;
+}
+td{
+  background-color: #f0f0f0;
+}
+/* ========== Control Buttons Section ========== */
+#roomControls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  outline: 0px;
+  border: 0px;
+  margin-top: 40px;
+  position: relative; /* stays below table naturally */
+  margin-bottom: 50px;
+}
+#totalRoom, #deleteRoom, #clearRoom,#downloadRoom,#splitRoom{
+    border-radius: 8px;
+    outline: 0px;
+    border: 0px;
+    padding: 12px;
+    cursor: pointer;
+  
+}
+#totalRoom {
+  background-color: #15dee1;
+  color: white;
+  width: 65px;
+}
+
+#deleteRoom {
+  background-color: #e03b3b;
+  color: white;
+}
+
+#clearRoom {
+  background-color: #f69a1b;
+  color: white;
+}
+
+#downloadRoom {
+  background-color: #2ebf4f;
+  color: white;
+  
+}
+
+#splitRoom{
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  height: 38px;
+  width: 120px;
+  text-align: center;
+  cursor: text;
+}
+
+/* ========== Result Section ========== */
+#result,
+#sAmt {
+  text-align: center;
+  margin-top: 10px;
+  color: #333;
+}
+
+span {
+  color: green;
+  font-weight: bold;
+}
+@media (max-width: 768px) {
+  #container{
+    flex-direction: column;
+    width: 95vh;
+  }
+  table{
+    width: 95%;
+  }
+  #roomControls, #groceryControls{
+    flex-wrap: wrap;
+    gap: 10px;
+
+  }
+  
+  input,
+  select,
+  #splitRoom,#splitGrocery {
+    width: 180px;
+  }
+}
+  a {
+        color: #12ade1;
+        text-decoration: none;
+        font-size: 180x;
+        font-weight: bolder;
+        padding-top: 20px;
+        transition: 3s;
+      }
+
+    </style>
+</head>
+<body>
+    <div id="container">
+   
+     <table id="room">
+        <tr>
+          <th>S.No</th>
+          <th>Date(DD/MM/hrs)</th>
+          <th>Product Name</th>
+          <th>Price</th>
+        </tr>
+    
+      </table>
+       <div id="roomControls">
+    <button id="totalRoom">Total</button>
+    <button id="deleteRoom">Delete</button>
+    <button id="clearRoom">Clear All</button>
+    <button id="downloadRoom">Download PDF</button>
+    <input type="number" id="splitRoom" placeholder="enther the count" />
+    </div>
+    <a href="grocery.html">Move To Grocery</a>
+    <a href="index.html">Move To Home</a>
+    <h1 id="result"></h1>
+    <h1 id="shares"></h1>
+    </div>
+    <script>
+        const room = document.getElementById('room');
+          const deletRoom = document.getElementById("deleteRoom");
+            const clearRoom = document.getElementById("clearRoom");
+           const totalRoom = document.getElementById("totalRoom");
+             const roomRows = room.getElementsByTagName("tr");
+             const splitRoom = document.getElementById('splitRoom');
+        const shares = document.getElementById('shares');     
+        const addUser = document.querySelector('button');
+        const name = localStorage.getItem('Names');
+        console.log("selsect: " , name);
+addUser.addEventListener('click',()=>{
+    
+})        
+
+const storage = sessionStorage.getItem("List");
+
+
+//total 
+totalRoom.addEventListener("click", () => {
+    const split = document.getElementById("splitRoom");
+    calTotal(room, roomRows, split);
+  });
+
+  function calTotal(totalVal, rows, split) {
+    let sum = 0;
+    let splitCount = 1;
+    for (let i = 0; i < rows.length; i++) {
+      const tds = rows[i].querySelectorAll("td");
+      if (tds.length >= 4) sum += parseFloat(tds[3].textContent);
+    }
+
+    if (split.value) {
+       const h1 = document.getElementById('container');
+      splitCount = parseInt(split.value);
+      shares.innerHTML = `Split Amount for ${splitCount} person is: <span>${(sum / splitCount).toFixed(2)}</span>`;
+      // ce.style.marginLeft = "87px";
+      h1.appendChild(shares);
+    }
+    document.getElementById("result").innerHTML = `Total: <span>${sum}</span>`;
+  }
+
+//Delete
+  deletRoom.addEventListener("click", () => deleteRow(roomRows, "room"));
+   function deleteRow(rows, type) {
+    if (rows.length > 1) {
+      rows[rows.length - 1].remove();
+      if (type === "room") roomCount--;
+      else if (type === "grocery") groceryCount--;
+    }
+  }
+  //Clear All
+   clearRoom.addEventListener("click", () => clearAll(room, "room"));
+
+  function clearAll(table, type) {
+    let rows = table.querySelectorAll("tr:not(:first-child)");
+    while (rows.length > 1) {
+      rows[rows.length - 1].remove();
+      rows = table.querySelectorAll("tr");
+    }
+    if (type === "room") roomCount = 1;
+    else if (type === "grocery") groceryCount = 1;
+    document.getElementById("result").innerHTML = "";
+  }
+
+
+console.log("This from add:", storage);
+console.log(typeof(storage))
+ room.innerHTML+=storage;
+
+
+    </script>
+</body>
+</html>

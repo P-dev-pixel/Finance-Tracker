@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grocery Expense Tracker</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #fafafa;
+      font-family: Arial, sans-serif;
+    }
+
+    #container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100%;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin-bottom: 30px;
+      text-align: center;
+      border-color: white;
+      width: 80%;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+
+    th {
+      background-color: #0077ff;
+      color: white;
+    }
+
+    td {
+      background-color: #f0f0f0;
+    }
+
+    /* ===== Control Buttons ===== */
+    #groceryControls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      width: 100%;
+      margin: 20px 0;
+    }
+
+    #groceryControls button,
+    #splitGrocery {
+      border-radius: 8px;
+      border: none;
+      padding: 12px;
+      cursor: pointer;
+    }
+
+    #totalGrocery {
+      background-color: #15dee1;
+      color: white;
+    }
+
+    #deleteGrocery {
+      background-color: #e03b3b;
+      color: white;
+    }
+
+    #clearGrocery {
+      background-color: #f69a1b;
+      color: white;
+    }
+
+    #downloadGrocery {
+      background-color: #2ebf4f;
+      color: white;
+    }
+
+    #splitGrocery {
+      border: 2px solid #ccc;
+      width: 120px;
+      text-align: center;
+      cursor: text;
+    }
+
+    /* ===== Result Sections ===== */
+    #result, #split, #remains {
+      text-align: center;
+      margin-top: 10px;
+      color: #333;
+    }
+
+    span {
+      color: green;
+      font-weight: bold;
+    }
+
+    a {
+      color: #12ade1;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: bold;
+      margin: 10px;
+      transition: 0.3s;
+    }
+
+    a:hover {
+      color: #0077ff;
+    }
+
+    @media (max-width: 768px) {
+      table {
+        width: 95%;
+      }
+      #splitGrocery {
+        width: 180px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <table id="grocery">
+      <caption><strong>Grocery Expense Table</strong></caption>
+      <tr>
+        <th>S.No</th>
+        <th>Name</th>
+        <th>Product Name</th>
+        <th>Price</th>
+      </tr>
+    </table>
+
+    <div id="groceryControls">
+      <button id="totalGrocery">Total</button>
+      <button id="deleteGrocery">Delete</button>
+      <button id="clearGrocery">Clear All</button>
+      <button id="downloadGrocery">Download PDF</button>
+      <input type="number" id="splitGrocery" placeholder="Enter the count" />
+    </div>
+
+    <a href="index.html">Move to Home</a>
+    <a href="room.html">Move to Room Expense</a>
+
+    <h3 id="result"></h3>
+    <h3 id="split"></h3>
+    <h3 id="remains"></h3>
+
+    <table id="sharesTable" border="1">
+      <caption><strong>Individual Shares</strong></caption>
+      <thead>
+        <tr><th>Name</th><th>Total Spend</th><th>Share Difference</th></tr>
+      </thead>
+      <tbody id="totals"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const groceryTable = document.getElementById("grocery");
+    const deleteBtn = document.getElementById("deleteGrocery");
+    const clearBtn = document.getElementById("clearGrocery");
+    const totalBtn = document.getElementById("totalGrocery");
+    const splitInput = document.getElementById("splitGrocery");
+    const sharesOutput = document.getElementById("split");
+    const totalResult = document.getElementById("result");
+    const totalsBody = document.getElementById("totals");
+    const sharesTableHead = document.querySelector("#sharesTable");
+    sharesTableHead.hidden = true;
+
+    // Restore stored data
+    const storage = sessionStorage.getItem("GrRow");
+    if (storage) groceryTable.innerHTML += storage;
+
+    // ===== Total Button Click =====
+    totalBtn.addEventListener("click", () => {
+      calculateTotals();
+    });
+
+    // ===== Calculate Totals =====
+    function calculateTotals() {
+      const rows = groceryTable.querySelectorAll("tr");
+      let sum = 0;
+
+      // calculate total
+      rows.forEach((r, index) => {
+        if (index === 0) return;
+        const tds = r.querySelectorAll("td");
+        if (tds.length >= 4) sum += parseFloat(tds[3].textContent) || 0;
+      });
+
+      totalResult.innerHTML = `Total: <span>${sum.toFixed(2)}</span>`;
+
+      // calculate split if count entered
+      if (splitInput.value) {
+        const splitCount = parseInt(splitInput.value);
+        if (splitCount > 0) {
+          const perPerson = sum / splitCount;
+          sharesOutput.innerHTML = `Split Amount for ${splitCount} person(s): <span>${perPerson.toFixed(2)}</span>`;
+
+          // calculate individual totals
+          const grRows = groceryTable.querySelectorAll("tr");
+          const sample = Array.from(grRows).map(row => {
+            const tds = row.querySelectorAll("td");
+            return Array.from(tds).map(td => td.textContent.trim());
+          });
+
+          let totals = {};
+          for (let i = 0; i < sample.length; i++) {
+            const [id, name, item, amount] = sample[i];
+            const value = Number(amount) || 0;
+            if (!name) continue;
+            if (!totals[name]) totals[name] = 0;
+            totals[name] += value;
+          }
+
+          // totalsBody.innerHTML = ""; // clear previous rows
+          sharesTableHead.hidden = false;
+
+          const sharePerPerson = sum / Object.keys(totals).length;
+
+          for (const name in totals) {
+            const row = document.createElement("tr");
+            const tdName = document.createElement("td");
+            const tdTotal = document.createElement("td");
+            const tdShare = document.createElement("td");
+
+            tdName.textContent = name;
+            tdTotal.textContent = totals[name].toFixed(2);
+            tdShare.textContent = (totals[name] - sharePerPerson).toFixed(2);
+
+            row.appendChild(tdName);
+            row.appendChild(tdTotal);
+            row.appendChild(tdShare);
+            totalsBody.appendChild(row);
+          }
+        }
+      }
+    }
+
+    // ===== Delete last row =====
+    deleteBtn.addEventListener("click", () => {
+      const rows = groceryTable.querySelectorAll("tr");
+      if (rows.length > 1) rows[rows.length - 1].remove();
+    });
+
+    // ===== Clear All rows =====
+    clearBtn.addEventListener("click", () => {
+      const rows = groceryTable.querySelectorAll("tr");
+      rows.forEach((r, index) => {
+        if (index !== 0) r.remove();
+      });
+      totalResult.innerHTML = "";
+      sharesOutput.innerHTML = "";
+      totalsBody.innerHTML = "";
+      sharesTableHead.hidden = true;
+    });
+  </script>
+</body>
+</html>
