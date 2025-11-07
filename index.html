@@ -20,8 +20,6 @@
       </select>
       <select name="" id="name">
         <option value="" disabled selected>Choose The Name</option>
-        <option value="Praveen">Praveen</option>
-        <option value="Madheshe">Madheshe</option>
       </select>
 
       <button>Add</button>
@@ -35,7 +33,7 @@
       <table id="room">
         <tr>
           <th>S.No</th>
-          <th>Date(DD/MM/hrs)</th>
+          <th>Date</th>
           <th>Product Name</th>
           <th>Price</th>
         </tr>
@@ -111,7 +109,6 @@
       }
     });
   });
-
       // Selector control
       select.addEventListener("click", () => {
         document
@@ -181,9 +178,7 @@
           const newRow = document.createElement("tr");
           newRow.innerHTML = `
           <td>${roomCount++}</td>
-          <td>${date.getDate()}/${
-            date.getMonth() + 1
-          } (Hrs: ${date.getHours()})</td>
+          <td>  ${date.getDate()}/${date.getMonth()}/ 2025</td>
           <td>${Product}</td>
           <td>${price}</td>`;
           room.appendChild(newRow);
@@ -226,7 +221,7 @@
             const tds = row.querySelectorAll("td");
             return Array.from(tds).map((td) => td.textContent.trim());
           });
-
+          
           for (let i = 0; i < sample.length; i++) {
             const [id, name, item, amount] = sample[i];
             const value = Number(amount) || 0;
@@ -292,9 +287,9 @@
           room.innerHTML =
             `<tr>
           <th>S.No</th>
-          <th>Date(DD/MM/hrs)</th>
-          <th>Product Name</th>
-          <th>Price</th>
+          <th>Date(DD/MM/YYYY)</th>
+          <th>Type</th>
+          <th>Amount</th>
         </tr>` + (savedData || "");
           grocery.innerHTML =
             `<tr>

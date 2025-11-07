@@ -141,7 +141,7 @@
       <button id="totalGrocery">Total</button>
       <button id="deleteGrocery">Delete</button>
       <button id="clearGrocery">Clear All</button>
-      <button id="downloadGrocery">Download PDF</button>
+      <button id="downloadGrocery" onclick="downloadPDF()">Download PDF</button>
       <input type="number" id="splitGrocery" placeholder="Enter the count" />
     </div>
 
@@ -161,6 +161,9 @@
     </table>
   </div>
 
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
   <script>
     const groceryTable = document.getElementById("grocery");
     const deleteBtn = document.getElementById("deleteGrocery");
@@ -172,6 +175,8 @@
     const totalsBody = document.getElementById("totals");
     const sharesTableHead = document.querySelector("#sharesTable");
     sharesTableHead.hidden = true;
+
+
 
     // Restore stored data
     const storage = sessionStorage.getItem("GrRow");
@@ -213,8 +218,8 @@
           let totals = {};
           for (let i = 0; i < sample.length; i++) {
             const [id, name, item, amount] = sample[i];
-            const value = Number(amount) || 0;
-            if (!name) continue;
+            const value = Number(amount) || 0; 
+            if (!name) continue;  
             if (!totals[name]) totals[name] = 0;
             totals[name] += value;
           }
@@ -260,6 +265,36 @@
       totalsBody.innerHTML = "";
       sharesTableHead.hidden = true;
     });
+
+    //Download Feature
+
+    const downloadBtn = document.getElementById("downloadGrocery");
+
+downloadBtn.addEventListener("click", () => {
+ downloadPDF();
+});
+function downloadPDF() {
+  const { jsPDF } = window.jspdf; // access from UMD version
+  const doc = new jsPDF();
+
+  // Add title
+  doc.text("Grocery Expense Table", 14, 10);
+
+  // Convert HTML table to PDF table
+  doc.autoTable({
+    html: '#grocery',  // your table ID
+    startY: 20,        // vertical start position
+    theme: 'striped',  // style: grid, plain, striped
+    headStyles: { fillColor: [100, 100, 255] },
+  });
+
+  // Save the file
+  doc.save('grocery-expenses.pdf');
+}
+
+</script>
+
+
   </script>
 </body>
 </html>
