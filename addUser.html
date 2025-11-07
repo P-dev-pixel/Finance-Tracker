@@ -103,11 +103,13 @@
     <h1>Add New User</h1>
     <input type="text" id="userName" placeholder="Enter user name" />
     <button id="addUserBtn">Add User</button>
+    <button id="removeUserBtn">Remove</button>
     <a href="index.html">⬅ Back to Home</a>
   </div>
     <script>
         const addBtn = document.getElementById('addUserBtn');
         const input = document.getElementById('userName');
+        const removeBtn = document.getElementById('removeUserBtn');
         addBtn.addEventListener('click',() =>{
             const userName = input.value.trim();
             if(!userName)
@@ -120,6 +122,20 @@
                    input.value ="";
                }
         })
+        removeBtn.addEventListener('click',()=>{
+           const userName = input.value.trim();
+            if(!userName)
+               return alert("enter user Name!");
+            
+               let users = JSON.parse(localStorage.getItem('users')) || []; 
+                   if(users.includes(userName)) {
+                 users =  Array.from(users).filter(name => name !== userName) ;
+                                    console.log( users);  
+                   localStorage.setItem('users',JSON.stringify(users));
+                   input.value ="";
+               }
+        })
+      
     </script>
 </body>
 </html>
