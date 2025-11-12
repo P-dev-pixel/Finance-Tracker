@@ -175,6 +175,11 @@
     const totalsBody = document.getElementById("totals");
     const sharesTableHead = document.querySelector("#sharesTable");
     sharesTableHead.hidden = true;
+     
+    //for get user name list
+     const users = localStorage.getItem('users');
+     //convert to orinal format(array)
+    const arr = JSON.parse(users)
 
 
 
@@ -227,7 +232,7 @@
           // totalsBody.innerHTML = ""; // clear previous rows
           sharesTableHead.hidden = false;
 
-          const sharePerPerson = sum / Object.keys(totals).length;
+          const sharePerPerson = sum / arr.length;
 
           for (const name in totals) {
             const row = document.createElement("tr");
@@ -240,18 +245,47 @@
             tdShare.textContent = (totals[name] - sharePerPerson).toFixed(2);
             if(Number(tdShare.textContent)<0) {
               tdShare.style.color = 'red';
-            
             }
-               else tdShare.style.color = 'green';
-   tdShare.style.fontWeight = 'bold'
+            else tdShare.style.color = 'green';
+
+            tdShare.style.fontWeight = 'bold'
             row.appendChild(tdName);
             row.appendChild(tdTotal);
             row.appendChild(tdShare);
-            totalsBody.appendChild(row);
+            totalsBody.appendChild(row);       
           }
-        }
-      }
+          
+ // New Feature: Include all users from userAdd list even if they didn’t spend
+ 
+const spenders = Object.keys(totals);  // From grocery table totals
+const users = arr;   // From userAdd list
+
+if (users.length !== spenders.length) {
+  users.forEach(user => {
+    if (!spenders.includes(user)) {
+      const row = document.createElement("tr");
+      const tdName = document.createElement("td");
+      const tdTotal = document.createElement("td");
+      const tdShare = document.createElement("td");
+
+      tdName.textContent = user;
+      tdTotal.textContent = 0;
+      tdShare.textContent = -sum / users.length;
+
+      // Highlight those who didn’t spend
+      tdShare.style.color = "red";
+      tdTotal.style.color = "red";
+
+      row.appendChild(tdName);
+      row.appendChild(tdTotal);
+      row.appendChild(tdShare);
+      totalsBody.appendChild(row);
     }
+  });
+}
+    }
+  }
+}
 
     // ===== Delete last row =====
     deleteBtn.addEventListener("click", () => {
